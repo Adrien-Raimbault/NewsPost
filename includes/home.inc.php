@@ -15,10 +15,10 @@ if(isset($_SESSION['login']) && $_SESSION['login'] === true) {
     echo $bienvenue;
 }
 
-$subdata = array('usermail','filin@email.fr', PDO::PARAM_STR_CHAR);
+$subdata = array('usermail','jacky@email.fr', PDO::PARAM_STR_CHAR);
 $subdata2 = array('id_role','3', PDO::PARAM_INT);
 
 $data = array($subdata, $subdata2);
 
 $req = new Sql();
-$req->insertion("INSERT INTO T_USERS(USERMAIL, ID_ROLE) VALUES (:usermail, :id_role)", $data);
+$req->insertion("T_USERS", $data);

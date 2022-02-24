@@ -19,8 +19,21 @@ class Sql
         }
     }
 
-    public function insertion($sql, $data)
+    public function insertion($sqlTable, $data)
     {
+        $tables = array();
+        $values = array();
+        for($i = 0 ; $i < count($data); $i++){
+            array_push($tables, $data[$i][0]);
+
+            $val = ":" . $data[$i][0];
+            array_push($values, $val);
+        }
+        $tables = implode(",", $tables);
+        $values = implode(",", $values);
+
+        $sql = "INSERT INTO $sqlTable($tables) VALUES ($values)";
+        
         try{
             $requete = $this->connexion->prepare($sql);
             
