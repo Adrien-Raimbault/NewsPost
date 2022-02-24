@@ -21,31 +21,35 @@ class Sql
 
     public function insertion($sqlTable, $data)
     {
-        $tables = array();
-        $values = array();
-        for($i = 0 ; $i < count($data); $i++){
-            array_push($tables, $data[$i][0]);
-            $val = ":" . $data[$i][0];
-            array_push($values, $val);
-        }
-        $tables = implode(",", $tables);
-        $values = implode(",", $values);
-
-        $sql = "INSERT INTO $sqlTable($tables) VALUES ($values)";
-
         try{
+            $tables = array();
+            $values = array();
+            for($i = 0 ; $i < count($data); $i++){
+                array_push($tables, $data[$i][0]);
+                $val = ":" . $data[$i][0];
+                array_push($values, $val);
+            }
+            $tables = implode(",", $tables);
+            $values = implode(",", $values);
+
+            $sql = "INSERT INTO $sqlTable($tables) VALUES ($values)";
             $requete = $this->connexion->prepare($sql);
             
+
+
             for($i = 0 ; $i < count($data) ; $i++){
                 $value = $data[$i][0];
                 $requete->bindParam(":$value", $data[$i][1], $data[$i][2]);
             }
             $requete->execute();
             echo "<p>Insertion effectuée</p>";
-            }
-            catch(PDOException $e){
-                die("Erreur :  " . $e->getMessage());
-            }
+        }
+        catch(PDOException $e){
+                $error =  $e->getMessage();
+                Log::write($error);
+                return false;
+                // die("Erreur :  " . $e->getMessage());
+        }
     }
 
     public function __destruct()
