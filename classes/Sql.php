@@ -25,7 +25,6 @@ class Sql
         $values = array();
         for($i = 0 ; $i < count($data); $i++){
             array_push($tables, $data[$i][0]);
-
             $val = ":" . $data[$i][0];
             array_push($values, $val);
         }
@@ -33,13 +32,13 @@ class Sql
         $values = implode(",", $values);
 
         $sql = "INSERT INTO $sqlTable($tables) VALUES ($values)";
-        
+
         try{
             $requete = $this->connexion->prepare($sql);
             
             for($i = 0 ; $i < count($data) ; $i++){
                 $value = $data[$i][0];
-                dump($requete->bindParam(":$value", $data[$i][1], $data[$i][2]));
+                $requete->bindParam(":$value", $data[$i][1], $data[$i][2]);
             }
             $requete->execute();
             echo "<p>Insertion effectuée</p>";
