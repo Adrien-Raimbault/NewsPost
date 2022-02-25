@@ -14,11 +14,3 @@ if(isset($_SESSION['login']) && $_SESSION['login'] === true) {
     $bienvenue .= "</p>";
     echo $bienvenue;
 }
-
-$subdata = array('usermail','boulet3@email.fr', PDO::PARAM_STR_CHAR);
-$subdata2 = array('id_role','test', PDO::PARAM_INT);
-
-$data = array($subdata, $subdata2);
-
-$req = new Sql();
-$req->insertion("T_USERS", $data);
