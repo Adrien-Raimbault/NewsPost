@@ -1,3 +1,5 @@
+<h2>Création de votre compte</h2>
+
 <?php
 if (isset($_POST['frm'])) {
     $name = htmlentities(mb_strtoupper(trim($_POST['name']))) ?? '';
@@ -31,43 +33,19 @@ if (isset($_POST['frm'])) {
         array_push($erreur, "Vos mots de passe ne correspondent pas");
 
     if (count($erreur) === 0) {
-        $serverName = "localhost";
-        $userName = "root";
-        $database = "sendnews";
-        $userPassword = "root";
+        $subdata = array('USERMAIL',"$email", PDO::PARAM_STR_CHAR);
+        $subdata2 = array('ID_ROLE','3', PDO::PARAM_INT);
+        $subdata3 = array('USENAME', "$name", PDO::PARAM_STR_CHAR);
+        $subdata4 = array('USEFIRSTNAME', "$firstname", PDO::PARAM_STR_CHAR);
+        $subdata5 = array('USEPASSWORD', "$password" , PDO::PARAM_STR_CHAR);
 
-        try {
-            $conn = new PDO("mysql:host=$serverName; dbname=$database", $userName, $userPassword);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $password = password_hash($password, PASSWORD_DEFAULT);
-            
-            $requete = $conn->prepare("SELECT * FROM T_users WHERE usermail='$email'");
-            $requete->execute();
-            $resultat = $requete->fetchAll(PDO::FETCH_OBJ);
-           
-            if(count($resultat) !== 0) {
-                echo "<p>Votre adresse est déjà enregistrée dans la base de données</p>";
-            }
+        $data = array($subdata, $subdata2, $subdata3, $subdata4, $subdata5);
 
-            else {
-                $query = $conn->prepare("
-                INSERT INTO T_users(usename, usefirstname, usermail, usepassword)
-                VALUES (:name, :firstname, :email, :password)
-                ");
-
-                $query->bindParam(':name', $name, PDO::PARAM_STR_CHAR);
-                $query->bindParam(':firstname', $firstname, PDO::PARAM_STR_CHAR);
-                $query->bindParam(':email', $email, PDO::PARAM_STR_CHAR);
-                $query->bindParam(':password', $password);
-                $query->execute();
-
-                echo "<p>Insertions effectuées</p>";
-            }
-        } catch (PDOException $e) {
-            die("Erreur :  " . $e->getMessage());
+        $req = new Sql;
+        if($req->select("T_USERS", $data, "Ce compte existe déjà")){
+            $req->insertion("T_USERS", $data);
         }
 
-        $conn = null;
     } else {
         $messageErreur = "<ul>";
         $i = 0;

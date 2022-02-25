@@ -1,7 +1,6 @@
-<?php
+<h2>S'abonner aux newsletter</h2>
 
-// Instancié via Objet PDO connection
-//
+<?php
 if (isset($_POST['frm'])) {
     $email = trim(mb_strtolower($_POST['email'])) ?? '';
 
@@ -11,44 +10,14 @@ if (isset($_POST['frm'])) {
         array_push($erreur, "Veuillez saisir un e-mail valide");
 
     if (count($erreur) === 0) {
-        // Instancier l'objet SQL
-        $serverName = "localhost";
-        $userName = "root";
-        $database = "sendnews";
-        $userPassword = "root";
+        $subdata = array('usermail',"$email", PDO::PARAM_STR_CHAR);
+        $subdata2 = array('id_role','3', PDO::PARAM_INT);
+        $data = array($subdata, $subdata2);
 
-        // Appeler la methode insertion de l'objet SQL
-        try {
-            $conn = new PDO("mysql:host=$serverName; dbname=$database", $userName, $userPassword);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
-            $requete = $conn->prepare("SELECT * FROM T_users WHERE usermail='$email'");
-            $requete->execute();
-            $resultat = $requete->fetchAll(PDO::FETCH_OBJ);
-           
-            if(count($resultat) !== 0) {
-                echo "<p>Votre adresse est déjà enregistrée dans la base de données</p>";
-            }
-
-            else {
-                $query = $conn->prepare("
-                INSERT INTO T_users(USERMAIL, ID_ROLE)
-                VALUES (:email, :id_role)
-                ");
-
-                $role = 3;
-                
-                $query->bindParam(':email', $email, PDO::PARAM_STR_CHAR);
-                $query->bindParam(':id_role', $role, PDO::PARAM_INT);
-                $query->execute();
-
-                echo "<p>Insertions effectuées</p>";
-            }
-        } catch (PDOException $e) {
-            die("Erreur :  " . $e->getMessage());
+        $req = new Sql;
+        if($req->select("T_USERS", $data, "Ce compte existe déjà")){
+            $req->insertion("T_USERS", $data);
         }
-
-        $conn = null;
     } else {
         $messageErreur = "<ul>";
         $i = 0;
